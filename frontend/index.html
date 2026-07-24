@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro de gastos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAF8;
+    --card: #FFFFFF;
+    --border: #E7E4DD;
+    --border-soft: #F0EEE8;
+    --text: #181815;
+    --text-soft: #8C897F;
+    --text-faint: #B8B5AC;
+    --ingreso: #2F6F4E;
+    --ingreso-tint: #EDF3EE;
+    --gasto: #8B3A3A;
+    --gasto-tint: #F6EDEC;
+    --acento: var(--gasto);
+    --acento-tint: var(--gasto-tint);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    padding: 48px 20px;
+  }
+
+  .contenedor { max-width: 460px; margin: 0 auto; }
+
+  .eyebrow {
+    margin: 0;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    font-weight: 500;
+  }
+
+  h1 {
+    margin: 6px 0 32px 0;
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 30px;
+    letter-spacing: -0.01em;
+  }
+
+  form.tarjeta {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+  }
+
+  .toggle {
+    display: flex;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 24px;
+  }
+
+  .toggle button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 0;
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    color: var(--text-soft);
+    background: transparent;
+    transition: all 0.15s ease;
+  }
+
+  .toggle button.activo-gasto { color: var(--gasto); background: var(--gasto-tint); }
+  .toggle button.activo-ingreso { color: var(--ingreso); background: var(--ingreso-tint); }
+
+  .campo { margin-bottom: 22px; }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-soft);
+    margin-bottom: 8px;
+  }
+
+  .fila-monto {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+  }
+
+  .signo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 20px;
+    color: var(--acento);
+  }
+
+  #monto {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--acento);
+    width: 100%;
+    padding: 0;
+  }
+
+  #monto::-webkit-outer-spin-button,
+  #monto::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+  .moneda { font-size: 12px; color: var(--text-faint); font-weight: 500; }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 26px;
+  }
+
+  select, input[type="date"] {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 10px;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--card);
+    font-family: 'Inter', sans-serif;
+  }
+
+  button[type="submit"] {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--text);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 9px;
+    padding: 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+
+  input:focus, select:focus, button:focus-visible {
+    outline: 2px solid var(--text);
+    outline-offset: 2px;
+  }
+
+  .encabezado-lista {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 28px 2px 14px 2px;
+  }
+
+  .encabezado-lista p:first-child {
+    margin: 0;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    font-weight: 500;
+  }
+
+  #saldo {
+    margin: 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+  }
+
+  .lista {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .vacio {
+    margin: 0;
+    padding: 24px;
+    font-size: 13px;
+    color: var(--text-faint);
+    text-align: center;
+  }
+
+  .fila-movimiento {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-top: 1px solid var(--border-soft);
+  }
+
+  .fila-movimiento:first-child { border-top: none; }
+
+  .icono {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .detalle { flex: 1; min-width: 0; }
+
+  .detalle .cat {
+    margin: 0;
+    font-size: 13.5px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .detalle .fecha {
+    margin: 2px 0 0 0;
+    font-size: 11.5px;
+    color: var(--text-faint);
+  }
+
+  .valor {
+    margin: 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14.5px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .btn-eliminar {
+    border: none;
+    background: transparent;
+    color: var(--text-faint);
+    cursor: pointer;
+    padding: 4px;
+    font-size: 15px;
+    line-height: 1;
+  }
+</style>
+</head>
+<body>
+
+<div class="contenedor">
+  <p class="eyebrow">Libro de movimientos</p>
+  <h1>Registro de gastos</h1>
+
+  <form class="tarjeta" id="formulario">
+    <div class="toggle" id="toggle">
+      <button type="button" id="btn-gasto" class="activo-gasto" data-tipo="gasto">↘ Gasto</button>
+      <button type="button" id="btn-ingreso" data-tipo="ingreso">↗ Ingreso</button>
+    </div>
+
+    <div class="campo">
+      <label for="monto">Monto</label>
+      <div class="fila-monto">
+        <span class="signo" id="signo">– $</span>
+        <input type="number" id="monto" inputmode="decimal" min="0" step="1" placeholder="0" required>
+        <span class="moneda">COP</span>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <label for="categoria">Categoría</label>
+        <select id="categoria">
+          <option>Alimentación</option>
+          <option>Transporte</option>
+          <option>Vivienda</option>
+          <option>Salud</option>
+          <option>Educación</option>
+          <option>Entretenimiento</option>
+          <option>Servicios</option>
+          <option>Otros</option>
+        </select>
+      </div>
+      <div>
+        <label for="fecha">Fecha</label>
+        <input type="date" id="fecha" required>
+      </div>
+    </div>
+
+    <button type="submit">＋ <span id="texto-boton">Registrar gasto</span></button>
+  </form>
+
+  <div class="encabezado-lista">
+    <p>Movimientos</p>
+    <p id="saldo">Saldo $0</p>
+  </div>
+
+  <div class="lista" id="lista"></div>
+</div>
+
+<script>
+  let tipoActual = "gasto";
+  let movimientos = [
+    { id: 1, tipo: "ingreso", monto: 1800000, categoria: "Servicios", fecha: hoy() },
+    { id: 2, tipo: "gasto", monto: 65000, categoria: "Alimentación", fecha: hoy() },
+  ];
+
+  const btnGasto = document.getElementById("btn-gasto");
+  const btnIngreso = document.getElementById("btn-ingreso");
+  const signo = document.getElementById("signo");
+  const montoInput = document.getElementById("monto");
+  const texturaBoton = document.getElementById("texto-boton");
+  const formulario = document.getElementById("formulario");
+  const fechaInput = document.getElementById("fecha");
+
+  fechaInput.value = hoy();
+
+  function hoy() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function formatCOP(valor) {
+    return Number(valor || 0).toLocaleString("es-CO", { maximumFractionDigits: 0 });
+  }
+
+  function formatFechaCorta(fecha) {
+    const [y, m, d] = fecha.split("-");
+    const meses = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+    return `${d} ${meses[parseInt(m, 10) - 1]}`;
+  }
+
+  function setTipo(tipo) {
+    tipoActual = tipo;
+    if (tipo === "gasto") {
+      btnGasto.classList.add("activo-gasto");
+      btnIngreso.classList.remove("activo-ingreso");
+      document.documentElement.style.setProperty("--acento", "var(--gasto)");
+      signo.textContent = "– $";
+      texturaBoton.textContent = "Registrar gasto";
+    } else {
+      btnIngreso.classList.add("activo-ingreso");
+      btnGasto.classList.remove("activo-gasto");
+      document.documentElement.style.setProperty("--acento", "var(--ingreso)");
+      signo.textContent = "+ $";
+      texturaBoton.textContent = "Registrar ingreso";
+    }
+  }
+
+  btnGasto.addEventListener("click", () => setTipo("gasto"));
+  btnIngreso.addEventListener("click", () => setTipo("ingreso"));
+
+  function renderLista() {
+    const lista = document.getElementById("lista");
+    lista.innerHTML = "";
+
+    if (movimientos.length === 0) {
+      lista.innerHTML = `<p class="vacio">Aún no hay movimientos registrados.</p>`;
+    } else {
+      movimientos.forEach((m) => {
+        const esIngreso = m.tipo === "ingreso";
+        const color = esIngreso ? "var(--ingreso)" : "var(--gasto)";
+        const tint = esIngreso ? "var(--ingreso-tint)" : "var(--gasto-tint)";
+        const fila = document.createElement("div");
+        fila.className = "fila-movimiento";
+        fila.innerHTML = `
+          <div class="icono" style="background:${tint}; color:${color};">${esIngreso ? "↗" : "↘"}</div>
+          <div class="detalle">
+            <p class="cat">${m.categoria}</p>
+            <p class="fecha">${formatFechaCorta(m.fecha)}</p>
+          </div>
+          <p class="valor" style="color:${color};">${esIngreso ? "+" : "–"} $${formatCOP(m.monto)}</p>
+          <button class="btn-eliminar" data-id="${m.id}" aria-label="Eliminar movimiento">✕</button>
+        `;
+        lista.appendChild(fila);
+      });
+    }
+
+    document.querySelectorAll(".btn-eliminar").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = Number(btn.getAttribute("data-id"));
+        movimientos = movimientos.filter((m) => m.id !== id);
+        renderLista();
+        renderSaldo();
+      });
+    });
+  }
+
+  function renderSaldo() {
+    const saldo = movimientos.reduce((acc, m) => acc + (m.tipo === "ingreso" ? m.monto : -m.monto), 0);
+    const saldoEl = document.getElementById("saldo");
+    saldoEl.textContent = `Saldo $${formatCOP(saldo)}`;
+    saldoEl.style.color = saldo >= 0 ? "var(--ingreso)" : "var(--gasto)";
+  }
+
+  formulario.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const valor = Number(montoInput.value);
+    const categoria = document.getElementById("categoria").value;
+    const fecha = fechaInput.value;
+    if (!valor || valor <= 0 || !fecha) return;
+
+    movimientos.unshift({ id: Date.now(), tipo: tipoActual, monto: valor, categoria, fecha });
+    montoInput.value = "";
+    renderLista();
+    renderSaldo();
+  });
+
+  renderLista();
+  renderSaldo();
+</script>
+
+</body>
+</html>
