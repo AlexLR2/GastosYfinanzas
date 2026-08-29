@@ -1,0 +1,23 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "administracion de finanzas",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexLR2/GastosYfinanzas.git"
+  },
+  "author": "Diego Leon",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlexLR2/GastosYfinanzas/issues"
+  },
+  "homepage": "https://github.com/AlexLR2/GastosYfinanzas#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "mysql2": "^3.23.4"
+  }
+}

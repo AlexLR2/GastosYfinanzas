@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -290,16 +291,7 @@
     <div class="grid-2">
       <div>
         <label for="categoria">Categoría</label>
-        <select id="categoria">
-          <option>Alimentación</option>
-          <option>Transporte</option>
-          <option>Vivienda</option>
-          <option>Salud</option>
-          <option>Educación</option>
-          <option>Entretenimiento</option>
-          <option>Servicios</option>
-          <option>Otros</option>
-        </select>
+        <select id="categoria"></select>
       </div>
       <div>
         <label for="fecha">Fecha</label>
@@ -334,6 +326,26 @@
   const fechaInput = document.getElementById("fecha");
 
   fechaInput.value = hoy();
+
+  function cargarCategorias() {
+    fetch("categorias.php")
+      .then((res) => res.json())
+      .then((categorias) => {
+        const select = document.getElementById("categoria");
+        select.innerHTML = "";
+        categorias.forEach((cat) => {
+          const opcion = document.createElement("option");
+          opcion.value = cat.id;
+          opcion.textContent = cat.nombre;
+          select.appendChild(opcion);
+        });
+      })
+      .catch(() => {
+        document.getElementById("categoria").innerHTML = `<option value="">No se pudieron cargar las categorías</option>`;
+      });
+  }
+
+  cargarCategorias();
 
   function hoy() {
     return new Date().toISOString().slice(0, 10);
@@ -415,11 +427,13 @@
   formulario.addEventListener("submit", (e) => {
     e.preventDefault();
     const valor = Number(montoInput.value);
-    const categoria = document.getElementById("categoria").value;
+    const selectCategoria = document.getElementById("categoria");
+    const categoriaId = selectCategoria.value;
+    const categoriaNombre = selectCategoria.options[selectCategoria.selectedIndex]?.textContent || "";
     const fecha = fechaInput.value;
-    if (!valor || valor <= 0 || !fecha) return;
+    if (!valor || valor <= 0 || !fecha || !categoriaId) return;
 
-    movimientos.unshift({ id: Date.now(), tipo: tipoActual, monto: valor, categoria, fecha });
+    movimientos.unshift({ id: Date.now(), tipo: tipoActual, monto: valor, categoria_id: categoriaId, categoria: categoriaNombre, fecha });
     montoInput.value = "";
     renderLista();
     renderSaldo();
