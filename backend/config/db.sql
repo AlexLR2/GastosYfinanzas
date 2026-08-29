@@ -61,3 +61,5 @@ INSERT INTO transacciones (tipo, monto, categoria_id, fecha) VALUES
 ('gasto',    120000.00, 7, '2026-08-07'),  -- internet, Servicios
 ('ingreso',  300000.00, 8, '2026-08-08'),  -- venta ocasional, Otros
 ('gasto',     95000.00, 1, '2026-08-09');  -- restaurante, Alimentación
+
+--verificar datos en la api
