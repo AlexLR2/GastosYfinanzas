@@ -12,4 +12,4 @@ const pool = mysql.createPool(
 
 module.exports = pool.promise()
 
-/* agregar conexion */.
+/* agregar conexion */
